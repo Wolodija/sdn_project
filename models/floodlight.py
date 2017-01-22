@@ -9,12 +9,12 @@ from models.switch import Switch
 
 
 class Floodlight(object):
-    ip = "192.168.56.1"
-    port = 5563
+    old_stats = None
+    new_stats = None
 
     @classmethod
     def get_switches(cls):
-        result = requests.get('http://192.168.56.1:8080/wm/core/controller/switches/json')
+        result = requests.get('http://localhost:8080/wm/core/controller/switches/json')
         json_data = json.loads(result.text)
 
         return_value = []
@@ -25,7 +25,7 @@ class Floodlight(object):
 
     @classmethod
     def get_ports(cls, switches):
-        result = requests.get('http://192.168.56.1:8080/wm/topology/links/json')
+        result = requests.get('http://localhost:8080/wm/topology/links/json')
         json_data = json.loads(result.text)
 
         for link in json_data:
@@ -40,7 +40,7 @@ class Floodlight(object):
     @classmethod
     def get_hosts(self, switches):
         Network.hosts = []
-        result = requests.get('http://192.168.56.1:8080/wm/device/')
+        result = requests.get('http://localhost:8080/wm/device/')
         json_data = json.loads(result.text)
 
         return_value = []
@@ -68,3 +68,12 @@ class Floodlight(object):
                     Link(port, new_port)
 
             Network.hosts.append(app_host)
+
+    @classmethod
+    def get_aggregats(cls):
+        Network.hosts = []
+        result = requests.get('http://localhost:8080/wm/core/switch/all/port/json')
+        json_data = json.loads(result.text)
+
+        Network.old_stats = Network.new_stats
+        Network.new_stats = json_data

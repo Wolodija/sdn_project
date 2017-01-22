@@ -5,6 +5,8 @@ from models.switch import Switch
 class Network(object):
     switches = []
     hosts = []
+    old_stats = None
+    new_stats = None
 
     @classmethod
     def get_switch(cls, switch_id):
